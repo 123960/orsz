@@ -2,7 +2,8 @@ function saveSuggestion() {
   console.log("Saving suggestion!!");
   var refDate    = new Date()
   var content    = document.getElementById("textarea-new-sugg-content").value;
-  var suggestion = { name: "suggestion-" + refDate.getTime(),
+  var name       = document.getElementById("textarea-new-sugg-name").value;
+  var suggestion = { name: name,
                      id: refDate.getTime(),
                      version: [refDate, "1.0"],
                      content: content,
@@ -20,8 +21,8 @@ function showSuggestion(suggestion) {
     var d = document.createElement("div");
     d.className = "panel-body";
     var br = document.createElement("br");
-    d.appendChild(document.createTextNode("[#]:" + suggestion.id));
-    d.appendChild(br);
+    /*d.appendChild(document.createTextNode("[#]:" + suggestion.id));
+    d.appendChild(br);*/
     d.appendChild(document.createTextNode("[Nome]: " + suggestion.name));
     d.appendChild(br.cloneNode(true));
     d.appendChild(document.createTextNode("[Versao]: " + suggestion.version[1]));
@@ -87,12 +88,12 @@ function createSuggestionDetail(suggestion) {
 
   var modalDetailCommentsFavorLabel = document.createElement("label");
   modalDetailCommentsFavorLabel.setAttribute("class","control-label");
-  modalDetailCommentsFavorLabel.value = "Comentários favoráveis";
+  modalDetailCommentsFavorLabel.appendChild(document.createTextNode("ComentÃ¡rios favorÃ¡veis"));
 
   var modalDetailCommentsFavorInput = document.createElement("input");
   modalDetailCommentsFavorInput.setAttribute("type","text");
   modalDetailCommentsFavorInput.setAttribute("class","form-control");
-  modalDetailCommentsFavorInput.setAttribute("onkeydown","saveComment("+suggestion.id+", 'favor', this.value)");
+  modalDetailCommentsFavorInput.setAttribute("onkeydown","saveComment("+suggestion.id+", 'favor', this.value, 'vini')");
   modalDetailCommentsFavorInput.setAttribute("id","sugg-comment-favor-" + suggestion.id);
 
   var modalDetailCommentsOpposed = document.createElement("div");
@@ -104,12 +105,12 @@ function createSuggestionDetail(suggestion) {
 
   var modalDetailCommentsOpposedLabel = document.createElement("label");
   modalDetailCommentsOpposedLabel.setAttribute("class","control-label");
-  modalDetailCommentsOpposedLabel.value = "Comentários contrários";
+  modalDetailCommentsOpposedLabel.appendChild(document.createTextNode("ComentÃ¡rios contrÃ¡rios"));
 
   var modalDetailCommentsOpposedInput = document.createElement("input");
   modalDetailCommentsOpposedInput.setAttribute("type","text");
   modalDetailCommentsOpposedInput.setAttribute("class","form-control");
-  modalDetailCommentsOpposedInput.setAttribute("onkeydown","saveComment("+suggestion.id+", 'opposed', this.value)");
+  modalDetailCommentsOpposedInput.setAttribute("onkeydown","saveComment("+suggestion.id+", 'opposed', this.value, 'vini')");
   modalDetailCommentsOpposedInput.setAttribute("id","sugg-comment-opposed-" + suggestion.id);
 
   modalDetailCommentsOpposedFormGroup.appendChild(modalDetailCommentsOpposedLabel);
@@ -136,7 +137,7 @@ function createSuggestionDetail(suggestion) {
   document.getElementById("sugg-details").appendChild(modal);
 
 }
-function saveComment(suggId, orientation, comment) {
+function saveComment(suggId, orientation, comment, user) {
   if(event.keyCode == 13) {
     var commentDiv         = document.getElementById("sugg-detail-comments-" + orientation + "-" + suggId);
     var commentBlockQuote  = document.createElement("blockquote");
@@ -165,10 +166,13 @@ function saveComment(suggId, orientation, comment) {
       commentBlockQuote.setAttribute("class", "blockquote-reverse");
     }
 
-    var modalDetailContent = document.getElementById("sugg-detail-comments-" + suggId).children[0];
+    var modalDetailContent = document.getElementById("sugg-detail-comments-" + orientation + "-" + suggId).children[0];
     var commentP           = document.createElement("p");
+    var quote              = document.createElement("small");
+    quote.appendChild(document.createTextNode(user));
     commentP.appendChild(document.createTextNode(comment));
     commentBlockQuote.appendChild(commentP);
+    commentBlockQuote.appendChild(quote);
     commentBlockQuote.appendChild(upButton);
     commentBlockQuote.appendChild(downButton);
     modalDetailContent.appendChild(commentBlockQuote);
