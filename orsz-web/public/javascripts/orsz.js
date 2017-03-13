@@ -5,10 +5,10 @@ function saveSuggestion() {
   var name       = document.getElementById("textarea-new-sugg-name").value;
   var suggestion = { name: name,
                      id: refDate.getTime(),
-                     version: [refDate, "1.0"],
+                     version: "1.0",
                      content: content,
-                     upvotes: [refDate, 0],
-                     downvotes: [refDate, 0]};
+                     upvotes: 0,
+                     downvotes: 0};
   createSuggestionDetail(suggestion);
   showSuggestion(suggestion);
   document.getElementById("textarea-new-sugg-content").value = "";
@@ -25,7 +25,7 @@ function showSuggestion(suggestion) {
     d.appendChild(br);*/
     d.appendChild(document.createTextNode("[Nome]: " + suggestion.name));
     d.appendChild(br.cloneNode(true));
-    d.appendChild(document.createTextNode("[Versao]: " + suggestion.version[1]));
+    d.appendChild(document.createTextNode("[Versao]: " + suggestion.version));
     d.appendChild(br.cloneNode(true));
     d.appendChild(document.createTextNode("[Conteudo]: " + suggestion.content));
     var detailsButton = document.createElement("button");

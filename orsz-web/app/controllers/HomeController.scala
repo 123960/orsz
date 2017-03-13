@@ -4,6 +4,9 @@ import javax.inject._
 import play.api._
 import play.api.mvc._
 
+import model.Suggestion
+import persistence.Persistence
+
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -19,6 +22,10 @@ class HomeController @Inject() extends Controller {
    */
   def index = Action {
     Ok(views.html.main())
+  }
+
+  def saveSuggestion(suggJson: String) = {
+    Persistence.persistSuggestion(Suggestion(suggJson))
   }
 
 }
