@@ -1,14 +1,17 @@
 package controllers
 
+import scala.util._
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import javax.inject._
 import play.api._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import play.api.mvc._
-import scala.util._
 
 import model.Proposition
 import persistence.Persistence
+import persistence.AsyncPersistence
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -18,6 +21,8 @@ import persistence.Persistence
 class PropositionController @Inject() extends Controller {
 
   lazy val persistence = Persistence.instance
+
+  lazy val asyncPersistence = AsyncPersistence.instance
 
   implicit val propositionWrite = new Writes[Proposition] {
     def writes(prop: Proposition) = Json.obj(
@@ -70,12 +75,16 @@ class PropositionController @Inject() extends Controller {
 
   def saveProposition(id: String) = Action(parse.json[Proposition]) {
     implicit request =>
-      persistence.persistProposition(request.body) match {
-        case Success(prop) => println("[PropositionController.saveProposition] - Proposition: " + prop)
-                              Ok(Json.toJson(prop))
-        case Failure(e)    => println("[PropositionController.saveProposition] - Failed to save proposition: " + request.body)
-                              InternalServerError
+      val f = asyncPersistence.persistProposition(request.body)
+
+      f onSuccess {
+        case prop => println("[PropositionController.saveProposition] - Proposition: " + prop)
       }
+      f onFailure {
+        case ex => println("[PropositionController.saveProposition] - Failed to save proposition: " + request.body)
+                   ex.printStackTrace
+      }
+      Ok("ok")
   }
 
   def removeProposition(id: String) = Action {
