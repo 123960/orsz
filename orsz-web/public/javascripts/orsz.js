@@ -4,13 +4,21 @@ function saveSuggestion() {
   var content    = document.getElementById("textarea-new-sugg-content").value;
   var name       = document.getElementById("textarea-new-sugg-name").value;
   var suggestion = { name: name,
-                     id: refDate.getTime(),
+                     id: refDate.getTime().toString(),
                      version: "1.0",
                      content: content,
                      upvotes: 0,
-                     downvotes: 0};
+                     downvotes: 0 };
   createSuggestionDetail(suggestion);
-  showSuggestion(suggestion);
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      showSuggestion(suggestion);
+    }
+  };
+  xhttp.open("POST", "http://localhost:9000/orsz/suggestion/" + refDate.getTime(), true);
+  xhttp.setRequestHeader("Content-Type", "application/json");
+  xhttp.send(JSON.stringify(suggestion));
   document.getElementById("textarea-new-sugg-content").value = "";
 }
 function showSuggestion(suggestion) {

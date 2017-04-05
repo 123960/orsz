@@ -3,14 +3,14 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.SuggestionController.index
-GET     /orsz                       controllers.SuggestionController.index
+GET     /                           controllers.PropositionController.main
+GET     /orsz                       controllers.PropositionController.main
 
-GET     /orsz/suggestions           controllers.SuggestionController.suggestions
-GET     /orsz/suggestion/:id        controllers.SuggestionController.suggestion(id: String)
-PUT     /orsz/suggestion/:id        controllers.SuggestionController.saveSuggestion(id: String)
-POST    /orsz/suggestion/:id        controllers.SuggestionController.saveSuggestion(id: String)
-DELETE  /orsz/suggestion/:id        controllers.SuggestionController.removeSuggestion(id: String)
+GET     /orsz/propositions           controllers.PropositionController.propositions
+GET     /orsz/proposition/:id        controllers.PropositionController.proposition(id: String)
+PUT     /orsz/proposition/:id        controllers.PropositionController.saveProposition(id: String)
+POST    /orsz/proposition/:id        controllers.PropositionController.saveProposition(id: String)
+DELETE  /orsz/proposition/:id        controllers.PropositionController.removeProposition(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
