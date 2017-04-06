@@ -17,4 +17,4 @@ libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.16.0"
 
 /******* Persistence plugins ********/
 libraryDependencies ++= Seq("com.datastax.cassandra" % "cassandra-driver-core" % "3.1.4",
-                            "com.google.firebase" % "firebase-server-sdk" % "3.0.3")
+                            "com.google.firebase" % "firebase-admin" % "4.1.6")
