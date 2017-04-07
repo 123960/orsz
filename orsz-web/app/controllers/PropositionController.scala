@@ -4,12 +4,14 @@ import scala.util._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import javax.inject._
+
 import play.api._
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
 import play.api.mvc._
+import play.api.libs.ws._
+import play.api.libs.json._
 
 import model.Proposition
+import model.implicits.Implicits._
 import persistence.Persistence
 import persistence.AsyncPersistence
 
@@ -18,47 +20,26 @@ import persistence.AsyncPersistence
  * application's home page.
  */
 @Singleton
-class PropositionController @Inject() extends Controller {
+class PropositionController @Inject()(ws: WSClient) extends Controller {
 
   lazy val persistence = Persistence.instance
 
-  lazy val asyncPersistence = AsyncPersistence.instance
-
-  implicit val propositionWrite = new Writes[Proposition] {
-    def writes(prop: Proposition) = Json.obj(
-      "id"         -> prop.id,
-      "owner"      -> prop.owner,
-      "createDate" -> prop.createDate,
-      "name"       -> prop.name,
-      "version"    -> prop.version,
-      "content"    -> prop.content,
-      "upvotes"    -> prop.upvotes,
-      "downvotes"  -> prop.downvotes,
-      "views"      -> prop.views
-    )
-  }
-
-  implicit val propositionRead: Reads[Proposition] = (
-    (JsPath \ "id").read[String]         and
-    (JsPath \ "owner").read[String]      and
-    (JsPath \ "createDate").read[String] and
-    (JsPath \ "name").read[String]       and
-    (JsPath \ "version").read[String]    and
-    (JsPath \ "content").read[String]    and
-    (JsPath \ "upvotes").read[Int]       and
-    (JsPath \ "downvotes").read[Int]     and
-    (JsPath \ "views").read[Int]
-  )(Proposition.apply _)
+  lazy val asyncPersistence = AsyncPersistence.instance(ws)
 
   def main = Action {
     Ok(views.html.main())
   }
 
-  def propositions = Action {
-    persistence.propositions match {
-      case Success(props) => Ok(Json.toJson(props))
-      case Failure(e)     => InternalServerError
+  def propositionsByOwner(owner: String) = Action {
+    val f = asyncPersistence.propositionsByOwner(owner)
+    f onSuccess {
+      case props => println(s"[PropositionController.propositionsByOwner] - Propositions: ${props}")
     }
+    f onFailure {
+      case ex => println(s"[PropositionController.propositionsByOwner] - Failed to get propositions to  ${owner}: ")
+                 ex.printStackTrace
+    }
+    Ok("Submited")
   }
 
   def proposition(id: String) = Action {
@@ -84,7 +65,7 @@ class PropositionController @Inject() extends Controller {
         case ex => println("[PropositionController.saveProposition] - Failed to save proposition: " + request.body)
                    ex.printStackTrace
       }
-      Ok("ok")
+      Ok("Submited")
   }
 
   def removeProposition(id: String) = Action {
