@@ -9,7 +9,8 @@ scalaVersion := "2.11.7"
 /******* Play plugins ********/
 libraryDependencies ++= Seq(jdbc,
                             cache,
-                            ws)
+                            ws,
+                            "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test)
 
 /******* Util plugins ********/
 libraryDependencies ++= Seq("com.github.nscala-time" %% "nscala-time" % "2.16.0",
@@ -17,6 +18,3 @@ libraryDependencies ++= Seq("com.github.nscala-time" %% "nscala-time" % "2.16.0"
 
 /******* Persistence plugins ********/
 libraryDependencies ++= Seq("com.datastax.cassandra" % "cassandra-driver-core" % "3.1.4")
-
-/******* Test plugins ********/
-libraryDependencies ++= Seq("org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test)

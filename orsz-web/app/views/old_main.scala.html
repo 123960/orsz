@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Orsz</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+        <link rel="stylesheet" href="@routes.Assets.versioned("bootstrap/css/bootstrap.css")">
+        <script type='text/javascript' src='@routes.Assets.versioned("javascripts/orsz.js")'></script>
+        <script type='text/javascript' src='@routes.Assets.versioned("javascripts/jquery-3.1.1.min.js")'></script>
+        <script type='text/javascript' src='@routes.Assets.versioned("bootstrap/js/bootstrap.min.js")'></script>
+    </head>
+    <body>
+      <div>
+        <div class="col-lg-2">
+          <ul class="nav nav-pills nav-stacked">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#">Perfil</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#new-sugg-modal">Nova Proposta</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-8">
+          <nav class="navbar navbar-default">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Orsz</a>
+              </div>
+              <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                <form class="navbar-form navbar-left" role="search">
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                  </div>
+                  <button type="submit" class="btn btn-default">Procurar</button>
+                </form>
+              </div>
+            </div>
+          </nav>
+          <div class="panel panel-default">
+            <div class="col-md-10 col-md-offset-1">
+              <div class="row" id="table-suggs">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="new-sugg-modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Nova Proposta</h4>
+            </div>
+            <div class="col-lg-4">
+              <textarea class="form-control" rows="3" id="textarea-new-sugg-name"></textarea>
+              <span class="help-block">Nome da proposta</span>
+            </div>
+            <div class="col-lg-8">
+              <textarea class="form-control" rows="3" id="textarea-new-sugg-content"></textarea>
+              <span class="help-block">Escreva sua proposta aqui</span>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelSuggestion()">Cancelar</button>
+              <button type="button" class="btn btn-success" data-dismiss="modal" onclick="saveSuggestion()">Salvar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="sugg-details"></div>
+
+    </body>
+</html>

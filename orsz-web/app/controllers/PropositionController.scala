@@ -10,7 +10,6 @@ import play.api.mvc._
 import play.api.libs.ws._
 import play.api.libs.json._
 
-import model.Vote
 import model.Proposition
 import model.implicits.Implicits._
 import persistence.Persistence
@@ -27,86 +26,53 @@ class PropositionController @Inject()(ws: WSClient) extends Controller {
 
   lazy val asyncPersistence = AsyncPersistence.instance(ws)
 
-  def mainPage = Action {
-    Ok(views.html.main("Discussion Platform"))
-  }
-
-  def newPropositionPage = Action {
-    Ok(views.html.newprop("New Proposition"))
-  }
-
-  def propositionById(id: String) = Action {
-    val f = asyncPersistence.propositionById(id)
-    f onSuccess {
-      case prop => println(s"[PropositionController.propositionById] - Propositions: ${prop}.")
-    }
-    f onFailure {
-      case ex => println(s"[PropositionController.propositionById] - Failed to get proposition to  ${id}.")
-                 ex.printStackTrace
-    }
-    Ok("Submited")
+  def main = Action {
+    Ok(views.html.main())
   }
 
   def propositionsByOwner(owner: String) = Action {
     val f = asyncPersistence.propositionsByOwner(owner)
     f onSuccess {
-      case props => println(s"[PropositionController.propositionsByOwner] - Propositions: ${props}.")
+      case props => println(s"[PropositionController.propositionsByOwner] - Propositions: ${props}")
     }
     f onFailure {
-      case ex => println(s"[PropositionController.propositionsByOwner] - Failed to get propositions to  ${owner}.")
+      case ex => println(s"[PropositionController.propositionsByOwner] - Failed to get propositions to  ${owner}: ")
                  ex.printStackTrace
     }
     Ok("Submited")
   }
 
+  def proposition(id: String) = Action {
+    Ok(Json.toJson(List(Proposition(id         = id,
+                                    owner      = "vini",
+                                    createDate = "today",
+                                    name       = "vini",
+                                    version    = "1.0",
+                                    content    = "Standovi si vendono nascere i disordini",
+                                    upvotes    = 1,
+                                    downvotes  = 0,
+                                    views      = 1))))
+  }
+
   def saveProposition(id: String) = Action(parse.json[Proposition]) {
     implicit request =>
-      val prop = Proposition(id         = if (request.body.id == "<genId>") java.util.UUID.randomUUID().toString() else request.body.id,
-                             owner      = request.body.owner,
-                             createDate = request.body.createDate,
-                             name       = request.body.name,
-                             version    = request.body.version,
-                             content    = request.body.content,
-                             status     = request.body.status,
-                             upvotes    = request.body.upvotes,
-                             downvotes  = request.body.downvotes,
-                             views      = request.body.views)
-      val f = asyncPersistence.persistProposition(prop)
+      val f = asyncPersistence.persistProposition(request.body)
 
       f onSuccess {
-        case _ => println(s"[PropositionController.saveProposition] - Proposition: ${prop} saved successfully!")
+        case prop => println("[PropositionController.saveProposition] - Proposition: " + prop)
       }
       f onFailure {
-        case ex => println(s"[PropositionController.saveProposition] - Failed to save proposition: ${request.body}.")
+        case ex => println("[PropositionController.saveProposition] - Failed to save proposition: " + request.body)
                    ex.printStackTrace
       }
       Ok("Submited")
   }
 
   def removeProposition(id: String) = Action {
-      val f = asyncPersistence.removeProposition(id)
-      f onSuccess {
-        case _ => println(s"[PropositionController.removeProposition] - Proposition ${id} removed successfully!")
-      }
-      f onFailure {
-        case ex => println(s"[PropositionController.removeProposition] - Failed to remove proposition ${id}.")
-                   ex.printStackTrace
-      }
-      Ok("Submited")
-  }
-
-  def voteProposition(id: String) = Action(parse.json[Vote]) {
-    implicit request =>
-      val f = asyncPersistence.voteProposition(request.body)
-
-      f onSuccess {
-        case vote => println(s"[PropositionController.voteProposition] - Vote ${vote} successfully!")
-      }
-      f onFailure {
-        case ex => println(s"[PropositionController.voteProposition] - Failed to vote ${request.body}.")
-                   ex.printStackTrace
-      }
-      Ok("Submited")
+    persistence.removeProposition(id) match {
+      case Success(_) => Ok(id)
+      case Failure(e) => InternalServerError
+    }
   }
 
 }
