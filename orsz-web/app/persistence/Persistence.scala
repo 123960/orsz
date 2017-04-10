@@ -14,5 +14,5 @@ abstract class Persistence {
 }
 
 object Persistence {
-  def instance = CassandraPersistence
+  def instance = ???
 }

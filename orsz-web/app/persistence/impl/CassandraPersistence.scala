@@ -9,9 +9,9 @@ import scala.collection.JavaConversions._
 import model.Proposition
 import persistence.Persistence
 
-object CassandraPersistence extends Persistence {
+abstract class CassandraPersistence extends Persistence {
 
-  lazy val cluster: Cluster = Cluster.builder().addContactPoint("172.22.4.2").build();
+  /*lazy val cluster: Cluster = Cluster.builder().addContactPoint("172.22.4.2").build();
   lazy val session: Session = cluster.connect("orsz");
 
   def persistProposition(prop: Proposition): Try[Proposition] = {
@@ -38,6 +38,6 @@ object CassandraPersistence extends Persistence {
   def removeProposition(id: String): Try[String] = {
     session.execute(s"DELETE FROM PROPOSITION WHERE id = '${id}'");
     Success(id)
-  }
+  }*/
 
 }
