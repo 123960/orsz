@@ -1,15 +1,17 @@
+@(headerTitle: String)
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Orsz</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <link rel="stylesheet" href="@routes.Assets.versioned("bootstrap/css/bootstrap.css")">
-        <script type='text/javascript' src='@routes.Assets.versioned("javascripts/jquery-3.1.1.min.js")'></script>
-        <script type='text/javascript' src='@routes.Assets.versioned("bootstrap/js/bootstrap.min.js")'></script>
-    </head>
-    <body>
-       @side_bar()
-      <div>text</div>
-    </body>
+  <head>
+    @head(headerTitle)
+  </head>
+  <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      @header(headerTitle)
+      <main class="mdl-layout__content">
+        @home()
+        @footer()
+      </main>
+    </div>
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  </body>
 </html>

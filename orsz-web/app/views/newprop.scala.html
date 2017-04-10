@@ -1,0 +1,55 @@
+@(headerTitle: String)
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.3/summernote.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.3/summernote.js"></script>
+    @head(headerTitle)
+  </head>
+  <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      @header(headerTitle)
+      <main class="mdl-layout__content">
+        <div class="mdl-layout__tab-panel is-active" id="new-prop">
+          <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col-desktop mdl-cell--8-col-tablet mdl-cell--6-col-phone">
+              <div class="mdl-card__supporting-text">
+                <form action="#">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" id="prop-name">
+                    <label class="mdl-textfield__label" for="prop-name">Proposition Name</label>
+                  </div>
+                </form>
+                <h5>Proposition Content:</h5>
+                <div id="prop-content"><p></p></div>
+                <script>
+                  $(document).ready(function() {
+                      $('#prop-content').summernote({
+                        height: 300,
+                        minHeight: null,
+                        maxHeight: null
+                      });
+                  });
+                </script>
+              </div>
+              <button id="save-prop-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" onclick="javascript:saveProposition()">
+                Save Proposition
+              </button>
+            </div>
+            <div id="save-prop-progress" style="width: 100%; display: none;" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+            <div id="save-prop-toast" class="mdl-js-snackbar mdl-snackbar">
+              <div class="mdl-snackbar__text"></div>
+              <button class="mdl-snackbar__action" type="button"></button>
+            </div>
+          </section>
+          @others()
+        </div>
+        @footer()
+      </main>
+    </div>
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  </body>
+</html>
