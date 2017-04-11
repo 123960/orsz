@@ -9,6 +9,8 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.ws._
 import play.api.libs.json._
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 import model.Vote
 import model.Proposition
@@ -28,7 +30,8 @@ class PropositionController @Inject()(ws: WSClient) extends Controller {
   lazy val asyncPersistence = AsyncPersistence.instance(ws)
 
   def mainPage = Action {
-    Ok(views.html.main("Discussion Platform"))
+    val props = Await.result(asyncPersistence.propositionsByOwner("vini"), 10 seconds)
+    Ok(views.html.main("Discussion Platform", props))
   }
 
   def newPropositionPage = Action {

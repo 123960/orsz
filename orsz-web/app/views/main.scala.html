@@ -1,4 +1,5 @@
-@(headerTitle: String)
+@import model.Proposition
+@(headerTitle: String, props: List[Proposition])
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,7 +9,7 @@
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       @header(headerTitle)
       <main class="mdl-layout__content">
-        @home()
+        @home(props)
         @footer()
       </main>
     </div>
