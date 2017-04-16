@@ -2,8 +2,9 @@ package model.implicits
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import model.Proposition
 import model.Vote
+import model.Comment
+import model.Proposition
 
 object Implicits {
   implicit val propositionWrite = new Writes[Proposition] {
@@ -53,5 +54,25 @@ object Implicits {
     (JsPath \ "voteType").read[String]  and
     (JsPath \ "voteDate").read[String]
   )(Vote.apply _)
+
+  implicit val commentWrite = new Writes[Comment] {
+    def writes(comment: Comment) = Json.obj(
+      "id"           -> comment.id,
+      "propId"       -> comment.propId,
+      "user"         -> comment.user,
+      "commentType"  -> comment.commentType,
+      "content"      -> comment.content,
+      "commentDate"  -> comment.commentDate
+    )
+  }
+
+  implicit val commentRead: Reads[Comment] = (
+    (JsPath \ "id").read[String]          and
+    (JsPath \ "propId").read[String]      and
+    (JsPath \ "user").read[String]        and
+    (JsPath \ "commentType").read[String] and
+    (JsPath \ "content").read[String]     and
+    (JsPath \ "commentDate").read[String]
+  )(Comment.apply _)
 
 }

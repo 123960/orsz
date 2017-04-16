@@ -79,8 +79,31 @@ function downvoteProposition(id, owner) {
       $("#downvote-" + id).prop("disabled",false);
     }
   };
-  console.log(JSON.stringify(vote))
   xhttp.open("POST", "http://localhost:9000/orsz/vote/" + vote.id, true);
   xhttp.setRequestHeader("Content-Type", "application/json");
   xhttp.send(JSON.stringify(vote));
+}
+
+function commentProposition(e, propId, type) {
+  if (e.keyCode == 13) {
+    var content = $("#comment-" + type + "-" + propId).text();
+    console.log("Commenting proposition!!");
+    var refDate    = new Date()
+    var comment    = { id:          "<genId>",
+                       propId:      propId,
+                       user:        "vini",
+                       commentType: type,
+                       content:     content,
+                       commentDate: refDate.getTime().toString() };
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && (this.status == 200 || this.status == 204)) {
+        console.log("Comment successfully!")
+      }
+    };
+    xhttp.open("POST", "http://localhost:9000/orsz/comment/" + comment.id, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify(comment));
+  }
 }

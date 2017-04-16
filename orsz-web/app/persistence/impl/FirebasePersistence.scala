@@ -10,8 +10,9 @@ import scala.async.Async.{async, await}
 import scala.async.Async.{async, await}
 import scala.util.{Try, Success, Failure}
 
-import model.Proposition
 import model.Vote
+import model.Comment
+import model.Proposition
 import model.implicits.Implicits._
 import persistence.AsyncPersistence
 
@@ -98,6 +99,18 @@ class FirebasePersistence(val ws: WSClient) extends AsyncPersistence {
     val voteCount = await { getPropVoteCount(vote.propId, vote.voteType) }
     await { patchVoteOnProp(vote, voteCount) }
     await { persistVote(vote) }
+  }
+
+  def commentProposition(comment: Comment): Future[Comment] = async {
+    val endpoint = s"${FIREBASE_ORSZ_ENDPOINT}/comments/${comment.id}.json?print=silent"
+    val content  = Json.toJson(comment)
+    Logger.debug(s"[commentProposition][comment: ${comment}] - start PUT on [${endpoint}] with [$content]")
+    val response = await { ws.url(endpoint).put(content) }
+    Logger.debug(s"[commentProposition][comment: ${comment}] - end PUT on [${endpoint}] with [$content]. Response was ${response.status}")
+    response.status match {
+      case 200|204 => comment
+      case _ => throw new Exception(s"[persistProposition][comment: ${comment}] - Failed to PUT on [${endpoint}] with [$content]. Response was ${response.status}")
+    }
   }
 
   /*** DELETE/FINAL ***/

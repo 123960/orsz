@@ -14,6 +14,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 import model.Vote
+import model.Comment
 import model.Proposition
 import model.implicits.Implicits._
 import persistence.Persistence
@@ -40,6 +41,14 @@ class PropositionController @Inject()(ws: WSClient)(cache: CacheApi) extends Con
 
   def newPropositionPage = Action {
     Ok(views.html.newprop("New Proposition"))
+  }
+
+  def detailPropositionPage(id: String) = Action {
+    val prop: Proposition = cache.getOrElse[Proposition](s"propById.${id}") {
+      Await.result(asyncPersistence.propositionById(id), 10 seconds)
+    }
+    cache.set(s"propById.${prop.id}", prop, 5 minutes)
+    Ok(views.html.detailprop(s"Proposition ${prop.name}", prop))
   }
 
   def propositionById(id: String) = Action {
@@ -108,6 +117,21 @@ class PropositionController @Inject()(ws: WSClient)(cache: CacheApi) extends Con
       Ok("Submited")
   }
 
+  def commentProposition(id: String) = Action(parse.json[Comment]) {
+    implicit request =>
+      val comment =  this.genIdFor(request.body)
+      val f = asyncPersistence.commentProposition(comment)
+
+      f onSuccess {
+        case _ => println(s"[PropositionController.commentProposition] - Comment ${comment} successfully!")
+      }
+      f onFailure {
+        case ex => println(s"[PropositionController.commentProposition] - Failed to comment ${request.body}.")
+                   ex.printStackTrace
+      }
+      Ok("Submited")
+  }
+
   def genIdFor(vote: Vote): Vote =
     if (vote.id == "<genId>") Vote(id         = java.util.UUID.randomUUID().toString(),
                                    voter      = vote.voter,
@@ -129,6 +153,15 @@ class PropositionController @Inject()(ws: WSClient)(cache: CacheApi) extends Con
                                           downvotes  = prop.downvotes,
                                           views      = prop.views)
     else prop
+
+  def genIdFor(comment: Comment): Comment =
+    if (comment.id == "<genId>") Comment(id          = java.util.UUID.randomUUID().toString(),
+                                         propId      = comment.propId,
+                                         user        = comment.user,
+                                         commentType = comment.commentType,
+                                         content     = comment.content,
+                                         commentDate = comment.commentDate)
+    else comment
 
   def sumVote(prop: Proposition, voteType: String): Proposition =
     voteType  match {

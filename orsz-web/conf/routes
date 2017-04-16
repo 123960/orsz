@@ -6,6 +6,7 @@
 GET     /                               controllers.PropositionController.mainPage
 GET     /orsz                           controllers.PropositionController.mainPage
 GET     /orsz/new/proposition           controllers.PropositionController.newPropositionPage
+GET     /orsz/detail/proposition/:id    controllers.PropositionController.detailPropositionPage(id: String)
 
 GET     /orsz/propositions/owner/:owner controllers.PropositionController.propositionsByOwner(owner: String)
 GET     /orsz/proposition/:id           controllers.PropositionController.propositionById(id: String)
@@ -15,6 +16,9 @@ DELETE  /orsz/proposition/:id           controllers.PropositionController.remove
 
 POST    /orsz/vote/:id                  controllers.PropositionController.voteProposition(id: String)
 PUT     /orsz/vote/:id                  controllers.PropositionController.voteProposition(id: String)
+
+POST    /orsz/comment/:id               controllers.PropositionController.commentProposition(id: String)
+PUT     /orsz/comment/:id               controllers.PropositionController.commentProposition(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
