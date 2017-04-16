@@ -11,7 +11,7 @@ import persistence.impl.FirebasePersistence
 abstract class AsyncPersistence {
 
   def persistProposition(prop: Proposition): Future[Proposition]
-  def propositionsByOwner(owner: String): Future[List[Proposition]]
+  def propositionsByOwner(owner: String, limitedTo: Int = 5): Future[List[Proposition]]
   def propositionById(id: String): Future[Proposition]
   def removeProposition(id: String): Future[String]
   def voteProposition(vote: Vote): Future[Vote]

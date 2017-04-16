@@ -13,8 +13,8 @@
         Create At: @prop.createDate
       </div>
       <div style="margin-left: 620px;">
-        @prop.upvotes
-        @prop.downvotes<br>
+        <i id="upvote-@prop.id" class="material-icons" style="cursor: pointer;" onclick="javascript:upvoteProposition('@prop.id', '@prop.owner')">thumb_up</i><i id="upvote-count-@prop.id">@prop.upvotes</i>
+        <i id="downvote-@prop.id" class="material-icons" style="cursor: pointer;" onclick="javascript:downvoteProposition('@prop.id', '@prop.owner')">thumb_down</i><i id="downvote-count-@prop.id">@prop.downvotes</i><br>
         @prop.views views
       </div>
     </div>

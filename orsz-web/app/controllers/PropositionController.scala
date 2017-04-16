@@ -7,6 +7,7 @@ import javax.inject._
 
 import play.api._
 import play.api.mvc._
+import play.api.cache._
 import play.api.libs.ws._
 import play.api.libs.json._
 import scala.concurrent.Await
@@ -23,14 +24,17 @@ import persistence.AsyncPersistence
  * application's home page.
  */
 @Singleton
-class PropositionController @Inject()(ws: WSClient) extends Controller {
+class PropositionController @Inject()(ws: WSClient)(cache: CacheApi) extends Controller {
 
   lazy val persistence = Persistence.instance
 
   lazy val asyncPersistence = AsyncPersistence.instance(ws)
 
   def mainPage = Action {
-    val props = Await.result(asyncPersistence.propositionsByOwner("vini"), 10 seconds)
+    val props = cache.getOrElse[List[Proposition]]("propsByOwner.vini") {
+      Await.result(asyncPersistence.propositionsByOwner("vini"), 10 seconds)
+    }
+    cache.set("propsByOwner.vini", props, 5 minutes)
     Ok(views.html.main("Discussion Platform", props))
   }
 
@@ -64,16 +68,7 @@ class PropositionController @Inject()(ws: WSClient) extends Controller {
 
   def saveProposition(id: String) = Action(parse.json[Proposition]) {
     implicit request =>
-      val prop = Proposition(id         = if (request.body.id == "<genId>") java.util.UUID.randomUUID().toString() else request.body.id,
-                             owner      = request.body.owner,
-                             createDate = request.body.createDate,
-                             name       = request.body.name,
-                             version    = request.body.version,
-                             content    = request.body.content,
-                             status     = request.body.status,
-                             upvotes    = request.body.upvotes,
-                             downvotes  = request.body.downvotes,
-                             views      = request.body.views)
+      val prop = this.genIdFor(request.body)
       val f = asyncPersistence.persistProposition(prop)
 
       f onSuccess {
@@ -100,10 +95,11 @@ class PropositionController @Inject()(ws: WSClient) extends Controller {
 
   def voteProposition(id: String) = Action(parse.json[Vote]) {
     implicit request =>
-      val f = asyncPersistence.voteProposition(request.body)
+      val vote =  this.genIdFor(request.body)
+      val f = asyncPersistence.voteProposition(vote)
 
       f onSuccess {
-        case vote => println(s"[PropositionController.voteProposition] - Vote ${vote} successfully!")
+        case _ => println(s"[PropositionController.voteProposition] - Vote ${vote} successfully!")
       }
       f onFailure {
         case ex => println(s"[PropositionController.voteProposition] - Failed to vote ${request.body}.")
@@ -112,4 +108,49 @@ class PropositionController @Inject()(ws: WSClient) extends Controller {
       Ok("Submited")
   }
 
+  def genIdFor(vote: Vote): Vote =
+    if (vote.id == "<genId>") Vote(id         = java.util.UUID.randomUUID().toString(),
+                                   voter      = vote.voter,
+                                   propId     = vote.propId,
+                                   propOwner  = vote.propOwner,
+                                   voteType   = vote.voteType,
+                                   voteDate   = vote.voteDate)
+    else vote
+
+  def genIdFor(prop: Proposition): Proposition =
+    if (prop.id == "<genId>") Proposition(id         = java.util.UUID.randomUUID().toString(),
+                                          owner      = prop.owner,
+                                          createDate = prop.createDate,
+                                          name       = prop.name,
+                                          version    = prop.version,
+                                          content    = prop.content,
+                                          status     = prop.status,
+                                          upvotes    = prop.upvotes,
+                                          downvotes  = prop.downvotes,
+                                          views      = prop.views)
+    else prop
+
+  def sumVote(prop: Proposition, voteType: String): Proposition =
+    voteType  match {
+      case "upvote"   => Proposition(id         = prop.id,
+                                     owner      = prop.owner,
+                                     createDate = prop.createDate,
+                                     name       = prop.name,
+                                     version    = prop.version,
+                                     content    = prop.content,
+                                     status     = prop.status,
+                                     upvotes    = prop.upvotes + 1,
+                                     downvotes  = prop.downvotes,
+                                     views      = prop.views)
+      case "downvote" => Proposition(id         = prop.id,
+                                     owner      = prop.owner,
+                                     createDate = prop.createDate,
+                                     name       = prop.name,
+                                     version    = prop.version,
+                                     content    = prop.content,
+                                     status     = prop.status,
+                                     upvotes    = prop.upvotes,
+                                     downvotes  = prop.downvotes + 1,
+                                     views      = prop.views)
+    }
 }

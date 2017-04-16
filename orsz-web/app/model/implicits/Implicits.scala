@@ -41,9 +41,7 @@ object Implicits {
       "propId"      -> vote.propId,
       "propOwner"   -> vote.propOwner,
       "voteType"    -> vote.voteType,
-      "voteDate"    -> vote.voteDate,
-      "version"     -> vote.version,
-      "status"      -> vote.status
+      "voteDate"    -> vote.voteDate
     )
   }
 
@@ -53,9 +51,7 @@ object Implicits {
     (JsPath \ "propId").read[String]    and
     (JsPath \ "propOwner").read[String] and
     (JsPath \ "voteType").read[String]  and
-    (JsPath \ "voteDate").read[String]  and
-    (JsPath \ "version").read[String]   and
-    (JsPath \ "status").read[String]
+    (JsPath \ "voteDate").read[String]
   )(Vote.apply _)
 
 }

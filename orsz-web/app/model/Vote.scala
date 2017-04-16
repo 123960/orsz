@@ -5,11 +5,9 @@ class Vote(val id:         String,
            val propId:     String,
            val propOwner:  String,
            val voteType:   String,
-           val voteDate:   String,
-           val version:    String,
-           val status:     String) {
+           val voteDate:   String) {
 
-  override def toString(): String = s"Vote[ID: ${this.id}, VOTER: ${this.voter}, PROPID: ${this.propId}, VOTETYPE: ${this.voteType}, VERSION: ${this.version}, STATUS: ${this.status}]"
+  override def toString(): String = s"Vote[ID: ${this.id}, VOTER: ${this.voter}, PROPID: ${this.propId}, VOTETYPE: ${this.voteType}]"
 
 }
 
@@ -20,9 +18,7 @@ object Vote {
             propId:     String,
             propOwner:  String,
             voteType:   String,
-            voteDate:   String,
-            version:    String,
-            status:     String) = new Vote(id, voter, propId, propOwner,
-                                           voteType, voteDate, version, status)
+            voteDate:   String) = new Vote(id, voter, propId, propOwner,
+                                           voteType, voteDate)
 
 }
